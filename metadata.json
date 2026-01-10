@@ -1,0 +1,8 @@
+{
+  "name": "Valhalla SCUM Server - WordPress Edition",
+  "description": "A high-end, Viking-themed React portal for SCUM game servers, designed to be embedded into or used as a WordPress theme. Includes a Gemini-powered server assistant.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}

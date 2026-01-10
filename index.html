@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>VALHALLA - SCUM Server Prototype</title>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com" rel="preconnect" />
+  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400..900&family=Space+Grotesk:wght@300..700&family=Noto+Sans:wght@300..700&display=swap"
+    rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+    rel="stylesheet" />
+  <script
+    src="https://www.paypal.com/sdk/js?client-id=AU0tJMHd5VjX9fRVVCTGS_60O9d7L1jAWIu3PguikAwHzPT4W1OOcOv8Kp03ZDx1LJzcIS9Me9SsNnAI&vault=true&intent=subscription"
+    data-sdk-integration-source="button-factory"></script>
+</head>
+
+<body>
+  <div id="root"></div>
+
+  <svg style="display: none;">
+    <defs>
+      <filter id="fire-distort-high">
+        <feTurbulence type="fractalNoise" baseFrequency="0.01 0.05" numOctaves="3" seed="1">
+          <animate attributeName="baseFrequency" dur="6s" values="0.01 0.05;0.015 0.07;0.01 0.05"
+            repeatCount="indefinite" />
+        </feTurbulence>
+        <feDisplacementMap in="SourceGraphic" scale="35" />
+      </filter>
+      <filter id="fire-distort-med">
+        <feTurbulence type="fractalNoise" baseFrequency="0.02 0.08" numOctaves="4" seed="2">
+          <animate attributeName="baseFrequency" dur="4s" values="0.02 0.08;0.025 0.12;0.02 0.08"
+            repeatCount="indefinite" />
+        </feTurbulence>
+        <feDisplacementMap in="SourceGraphic" scale="20" />
+      </filter>
+      <filter id="fire-distort-low">
+        <feTurbulence type="fractalNoise" baseFrequency="0.03 0.15" numOctaves="2" seed="3">
+          <animate attributeName="baseFrequency" dur="3s" values="0.03 0.15;0.035 0.2;0.03 0.15"
+            repeatCount="indefinite" />
+        </feTurbulence>
+        <feDisplacementMap in="SourceGraphic" scale="10" />
+      </filter>
+    </defs>
+  </svg>
+  <script type="module" src="/src/index.tsx"></script>
+</body>
+
+</html>

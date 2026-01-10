@@ -1,0 +1,166 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    font-family: 'Space Grotesk', sans-serif;
+    @apply bg-background-dark text-white overflow-x-hidden;
+  }
+}
+
+@layer utilities {
+  .material-symbols-outlined { 
+    font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24; 
+  }
+
+  /* --- EFECTO DE FUEGO INFERNAL --- */
+  .fire-wrapper {
+    position: relative;
+    display: inline-block;
+    filter: drop-shadow(0 0 40px rgba(255, 68, 0, 0.5));
+  }
+
+  .fire-text-main {
+    position: relative;
+    z-index: 20;
+    background: linear-gradient(to bottom, #fff 10%, #fffb00 30%, #f2b90d 50%, #ff4800 80%, #a32424 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 0 8px rgba(255, 200, 0, 0.6));
+  }
+
+  .flame-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    user-select: none;
+    mix-blend-mode: screen;
+    transform-origin: bottom;
+    text-align: center;
+  }
+
+  .flame-red {
+    z-index: 5; color: #ff0000; filter: blur(10px) url(#fire-distort-high);
+    animation: flame-rise-large 4s infinite alternate ease-in-out; opacity: 0.7;
+  }
+
+  .flame-orange {
+    z-index: 10; color: #ff8800; filter: blur(5px) url(#fire-distort-med);
+    animation: flame-rise-med 3s infinite alternate-reverse ease-in-out; opacity: 0.8;
+  }
+
+  .flame-yellow {
+    z-index: 15; color: #ffff00; filter: blur(2px) url(#fire-distort-low);
+    animation: flame-rise-short 2.5s infinite alternate ease-in-out; opacity: 0.9;
+  }
+
+  /* --- EFECTO DE FLECHAS REALISTAS CON TRAYECTORIA EN ARCO --- */
+  .arrow-volley-container {
+      position: absolute;
+      inset: -400px;
+      pointer-events: none;
+      z-index: 50;
+  }
+
+  .realistic-arrow {
+      position: absolute;
+      width: 150px;
+      height: 4px;
+      opacity: 0;
+      display: flex;
+      align-items: center;
+  }
+
+  /* El astil de madera */
+  .arrow-shaft {
+      width: 120px;
+      height: 3px;
+      background: linear-gradient(90deg, #3d2b1f, #5c4033, #3d2b1f);
+      position: relative;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.5);
+  }
+
+  /* La punta de metal */
+  .arrow-head {
+      width: 0;
+      height: 0;
+      border-left: 15px solid #888;
+      border-top: 5px solid transparent;
+      border-bottom: 5px solid transparent;
+      position: absolute;
+      right: -14px;
+      filter: drop-shadow(0 0 2px rgba(255,255,255,0.2));
+  }
+
+  /* Las plumas (Fletching) */
+  .arrow-feathers {
+      position: absolute;
+      left: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+  }
+
+  .feather {
+      width: 30px;
+      height: 6px;
+      background: rgba(220, 220, 220, 0.8);
+      clip-path: polygon(0 50%, 100% 0, 100% 100%);
+      transform: skewX(-20deg);
+  }
+
+  .arrow-fly-arc {
+      animation: arrow-parabola 1.5s cubic-bezier(0.2, 0.1, 0.3, 1) forwards;
+  }
+
+  .ember {
+      position: absolute;
+      background: #ffcc00;
+      border-radius: 50%;
+      pointer-events: none;
+      box-shadow: 0 0 10px #ff4400, 0 0 20px #ffaa00;
+      animation: ember-rise linear infinite;
+      z-index: 30;
+  }
+}
+
+@keyframes flame-rise-large {
+  0% { transform: scaleY(1.05) translateY(-2px); opacity: 0.5; }
+  100% { transform: scaleY(1.3) translateY(-15px); opacity: 0.8; }
+}
+
+@keyframes flame-rise-med {
+  0% { transform: scaleY(1.02) translateY(-1px); opacity: 0.6; }
+  100% { transform: scaleY(1.2) translateY(-10px); opacity: 0.9; }
+}
+
+@keyframes flame-rise-short {
+  0% { transform: scaleY(1.01) translateY(0px); opacity: 0.7; }
+  100% { transform: scaleY(1.15) translateY(-5px); opacity: 1; }
+}
+
+@keyframes arrow-parabola {
+  0% {
+      transform: translate(-10vw, 40vh) rotate(-15deg);
+      opacity: 0;
+  }
+  10% { opacity: 1; }
+  50% {
+      transform: translate(45vw, 10vh) rotate(0deg);
+      opacity: 1;
+  }
+  90% { opacity: 1; }
+  100% {
+      transform: translate(110vw, 50vh) rotate(25deg);
+      opacity: 0;
+  }
+}
+
+@keyframes ember-rise {
+  0% { transform: translateY(0) translateX(0) scale(1); opacity: 1; }
+  50% { transform: translateY(-100px) translateX(10px) scale(1.1); }
+  100% { transform: translateY(-250px) translateX(-5px) scale(0); opacity: 0; }
+}
