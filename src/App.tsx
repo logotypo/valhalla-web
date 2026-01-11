@@ -14,6 +14,7 @@ import Profile from './pages/Profile';
 import AdminDashboard from './pages/AdminDashboard';
 import OdinAssistant from './components/OdinAssistant';
 import SteamIDEnforcer from './components/SteamIDEnforcer';
+import ProtectedRoute from './components/ProtectedRoute';
 
 const App: React.FC = () => {
   return (
@@ -26,13 +27,13 @@ const App: React.FC = () => {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/join" element={<Auth />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/admin" element={<AdminDashboard />} />
-            <Route path="/donations" element={<Donations />} />
-            <Route path="/events" element={<Events />} />
-            <Route path="/rules" element={<Rules />} />
-            <Route path="/community" element={<Community />} />
-            <Route path="/calendar" element={<Future />} />
+            <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+            <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
+            <Route path="/donations" element={<ProtectedRoute><Donations /></ProtectedRoute>} />
+            <Route path="/events" element={<ProtectedRoute><Events /></ProtectedRoute>} />
+            <Route path="/rules" element={<ProtectedRoute><Rules /></ProtectedRoute>} />
+            <Route path="/community" element={<ProtectedRoute><Community /></ProtectedRoute>} />
+            <Route path="/calendar" element={<ProtectedRoute><Future /></ProtectedRoute>} />
           </Routes>
         </main>
 
