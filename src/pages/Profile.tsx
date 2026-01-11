@@ -29,6 +29,8 @@ const Profile: React.FC = () => {
     clan: ''
   });
 
+  const [userDonations, setUserDonations] = useState<any[]>([]);
+
   useEffect(() => {
     const fetchProfile = async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -37,6 +39,7 @@ const Profile: React.FC = () => {
         return;
       }
 
+      // 1. Fetch Profile
       const { data: profile } = await supabase
         .from('profiles')
         .select('*')
@@ -63,16 +66,42 @@ const Profile: React.FC = () => {
           clan: profile.clan || ''
         });
       }
+
+      // 2. Fetch Donations
+      const { data: donations } = await supabase
+        .from('donations')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false });
+
+      if (donations) {
+        setUserDonations(donations);
+      }
+
       setLoading(false);
     };
 
     fetchProfile();
   }, [navigate]);
 
+  // Determine active kits
+  const isKitActive = (kitName: string) => {
+    // Find the latest donation for this package
+    const latestDonation = userDonations.find(d => d.package_name === kitName);
+    if (!latestDonation) return false;
+
+    // Check if expired (30 days)
+    const donationDate = new Date(latestDonation.created_at);
+    const expirationDate = new Date(donationDate.getTime() + 30 * 24 * 60 * 60 * 1000);
+    const now = new Date();
+
+    return now < expirationDate;
+  };
+
   const kits = [
-    { name: "Thrall", icon: "agriculture", available: true },
-    { name: "Huskarl", icon: "shield", available: false },
-    { name: "Jarl", icon: "swords", available: true },
+    { name: "Thrall", icon: "agriculture", available: isKitActive("Thrall") },
+    { name: "Huskarl", icon: "shield", available: isKitActive("Huskarl") },
+    { name: "Jarl", icon: "swords", available: isKitActive("Jarl") },
   ];
 
   const [uploads, setUploads] = useState<any[]>([]);
