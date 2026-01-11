@@ -98,10 +98,84 @@ const Profile: React.FC = () => {
     return now < expirationDate;
   };
 
+
+  const [userClaims, setUserClaims] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchClaims = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data } = await supabase
+        .from('kit_claims')
+        .select('*')
+        .eq('user_id', user.id);
+
+      if (data) setUserClaims(data);
+    };
+    fetchClaims();
+  }, []);
+
+  const handleClaim = async (kitName: string) => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    if (!confirm(`¿Estás seguro de que quieres solicitar la entrega del kit ${kitName}? Un administrador revisará tu petición.`)) return;
+
+    try {
+      const { error } = await supabase
+        .from('kit_claims')
+        .insert({
+          user_id: user.id,
+          kit_name: kitName
+        });
+
+      if (error) throw error;
+
+      alert("¡Solicitud enviada! Un administrador revisará tu petición pronto.");
+      // Refresh claims
+      const { data } = await supabase.from('kit_claims').select('*').eq('user_id', user.id);
+      if (data) setUserClaims(data);
+
+    } catch (error: any) {
+      alert("Error al solicitar kit: " + error.message);
+    }
+  };
+
+  const getKitStatus = (kitName: string) => {
+    // 1. Get active donations (last 30 days)
+    const activeDonations = userDonations.filter(d => {
+      if (d.package_name !== kitName) return false;
+      const donationDate = new Date(d.created_at);
+      const expirationDate = new Date(donationDate.getTime() + 30 * 24 * 60 * 60 * 1000);
+      return new Date() < expirationDate;
+    });
+
+    const activeDonationsCount = activeDonations.length;
+
+    // 2. Get valid claims (not rejected)
+    const validClaims = userClaims.filter(c => c.kit_name === kitName && c.status !== 'rejected');
+    const validClaimsCount = validClaims.length;
+
+    const isPending = validClaims.some(c => c.status === 'pending');
+
+    // 3. Determine status
+    if (activeDonationsCount === 0) return { status: 'cooldown', label: 'En enfriamiento' };
+
+    // Enforce one pending claim at a time
+    if (isPending) return { status: 'pending', label: 'Solicitado' };
+
+    if (validClaimsCount >= activeDonationsCount) {
+      return { status: 'delivered', label: 'Reclamado' };
+    }
+
+    return { status: 'available', label: 'Reclamar' };
+  };
+
   const kits = [
-    { name: "Thrall", icon: "agriculture", available: isKitActive("Thrall") },
-    { name: "Huskarl", icon: "shield", available: isKitActive("Huskarl") },
-    { name: "Jarl", icon: "swords", available: isKitActive("Jarl") },
+    { name: "Thrall", icon: "agriculture", status: getKitStatus("Thrall") },
+    { name: "Huskarl", icon: "shield", status: getKitStatus("Huskarl") },
+    { name: "Jarl", icon: "swords", status: getKitStatus("Jarl") },
   ];
 
   const [uploads, setUploads] = useState<any[]>([]);
@@ -392,17 +466,22 @@ const Profile: React.FC = () => {
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {kits.map((kit, i) => (
-                  <div key={i} className={`p-6 border flex items-center justify-between rounded-sm ${kit.available ? 'bg-surface-dark/95 backdrop-blur-md border-white/5' : 'bg-black/90 border-white/5 opacity-50'}`}>
+                  <div key={i} className={`p-6 border flex items-center justify-between rounded-sm ${kit.status.status === 'available' ? 'bg-surface-dark/95 backdrop-blur-md border-white/5' : 'bg-black/90 border-white/5 opacity-50'}`}>
                     <div className="flex items-center gap-4">
-                      <span className={`material-symbols-outlined text-3xl ${kit.available ? 'text-primary' : 'text-gray-600'}`}>{kit.icon}</span>
+                      <span className={`material-symbols-outlined text-3xl ${kit.status.status === 'available' ? 'text-primary' : 'text-gray-600'}`}>{kit.icon}</span>
+
                       <div>
                         <h4 className="font-bold text-white text-sm uppercase">{kit.name}</h4>
-                        <p className="text-[10px] text-gray-500 uppercase">{kit.available ? 'Disponible' : 'En enfriamiento'}</p>
+                        <p className="text-[10px] text-gray-500 uppercase">{kit.status.status === 'available' ? 'Disponible' : kit.status.label}</p>
                       </div>
                     </div>
-                    {kit.available && (
-                      <button className="bg-primary/10 text-primary border border-primary/20 px-4 py-2 text-[10px] font-black uppercase tracking-widest hover:bg-primary hover:text-black transition-all">
-                        Reclamar
+                    {kit.status.status !== 'cooldown' && (
+                      <button
+                        onClick={() => handleClaim(kit.name)}
+                        disabled={kit.status.status !== 'available'}
+                        className={`bg-primary/10 text-primary border border-primary/20 px-4 py-2 text-[10px] font-black uppercase tracking-widest hover:bg-primary hover:text-black transition-all ${kit.status.status !== 'available' ? 'opacity-50 cursor-not-allowed' : ''}`}
+                      >
+                        {kit.status.label}
                       </button>
                     )}
                   </div>

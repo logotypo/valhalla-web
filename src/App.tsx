@@ -12,6 +12,7 @@ import Future from './pages/Future';
 import Auth from './pages/Auth';
 import Profile from './pages/Profile';
 import AdminDashboard from './pages/AdminDashboard';
+import KitClaims from './pages/KitClaims';
 import OdinAssistant from './components/OdinAssistant';
 import SteamIDEnforcer from './components/SteamIDEnforcer';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -31,6 +32,7 @@ const App: React.FC = () => {
             <Route path="/join" element={<Auth />} />
             <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
             <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
+            <Route path="/kit-claims" element={<ProtectedRoute><KitClaims /></ProtectedRoute>} />
             <Route path="/donations" element={<ProtectedRoute><Donations /></ProtectedRoute>} />
             <Route path="/events" element={<ProtectedRoute><Events /></ProtectedRoute>} />
             <Route path="/rules" element={<ProtectedRoute><Rules /></ProtectedRoute>} />

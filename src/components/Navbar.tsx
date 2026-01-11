@@ -54,7 +54,11 @@ const Navbar: React.FC = () => {
     { name: 'Calendario', path: '/calendar' },
     { name: 'Reglas', path: '/rules' },
     { name: 'Comunidad', path: '/community' },
-    ...(isAdmin ? [{ name: 'Admin', path: '/admin' }] : []),
+    { name: 'Comunidad', path: '/community' },
+    ...(isAdmin ? [
+      { name: 'Admin', path: '/admin' },
+      { name: 'KitDonato', path: '/kit-claims' }
+    ] : []),
   ];
 
   const isActive = (path: string) => location.pathname === path;
@@ -81,10 +85,13 @@ const Navbar: React.FC = () => {
                   key={link.path}
                   to={link.path}
                   className={`text-[10px] font-black uppercase tracking-[0.2em] transition-all py-1 border-b-2 px-1 ${isActive(link.path)
-                    ? (link.name === 'Admin' ? 'text-red-500 border-red-500' : 'text-primary border-primary')
+                    ? (link.name === 'Admin' ? 'text-red-500 border-red-500' :
+                      link.name === 'KitDonato' ? 'text-green-500 border-green-500' : 'text-primary border-primary')
                     : (link.name === 'Admin'
                       ? 'text-red-500/70 border-transparent hover:text-red-500 hover:border-red-500/20'
-                      : 'text-gray-500 border-transparent hover:text-white hover:border-white/20')
+                      : link.name === 'KitDonato'
+                        ? 'text-green-500/70 border-transparent hover:text-green-500 hover:border-green-500/20'
+                        : 'text-gray-500 border-transparent hover:text-white hover:border-white/20')
                     }`}
                 >
                   {link.name}
