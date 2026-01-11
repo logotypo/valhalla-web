@@ -6,6 +6,7 @@ import { supabase } from '../supabase';
 const Auth: React.FC = () => {
   const [isRegister, setIsRegister] = useState(true);
   const [name, setName] = useState('');
+  const [steamId, setSteamId] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -25,7 +26,8 @@ const Auth: React.FC = () => {
           options: {
             data: {
               full_name: name,
-              warrior_name: name
+              warrior_name: name,
+              steam_id: steamId
             },
             emailRedirectTo: 'https://valhallascum.com/'
           }
@@ -97,6 +99,26 @@ const Auth: React.FC = () => {
                     onChange={(e) => setName(e.target.value)}
                     className="w-full bg-black/50 border border-white/10 p-3 pl-10 text-white focus:outline-none focus:border-primary transition-colors text-sm"
                     placeholder="Ragnar..."
+                  />
+                </div>
+              </div>
+            )}
+
+            {isRegister && (
+              <div className="space-y-2">
+                <label className="text-[10px] font-black text-primary uppercase tracking-widest">
+                  Steam ID (64 bits)
+                </label>
+                <div className="relative">
+                  <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm">
+                    gamepad
+                  </span>
+                  <input
+                    required
+                    value={steamId}
+                    onChange={(e) => setSteamId(e.target.value)}
+                    className="w-full bg-black/50 border border-white/10 p-3 pl-10 text-white focus:outline-none focus:border-primary transition-colors text-sm"
+                    placeholder="76561198..."
                   />
                 </div>
               </div>
