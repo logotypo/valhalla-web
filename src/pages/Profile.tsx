@@ -198,6 +198,35 @@ const Profile: React.FC = () => {
     fetchUploads();
   }, []);
 
+  // Fetch Kill Stats
+  useEffect(() => {
+    const fetchStats = async () => {
+      if (!warrior.steamId) return;
+
+      // Count Kills
+      const { count: killsCount } = await supabase
+        .from('kill_events')
+        .select('*', { count: 'exact', head: true })
+        .eq('killer_steam_id', warrior.steamId);
+
+      // Count Deaths
+      const { count: deathsCount } = await supabase
+        .from('kill_events')
+        .select('*', { count: 'exact', head: true })
+        .eq('victim_steam_id', warrior.steamId);
+
+      setWarrior(prev => ({
+        ...prev,
+        kills: killsCount || 0,
+        deaths: deathsCount || 0
+      }));
+    };
+
+    if (warrior.steamId && warrior.steamId !== 'No vinculado') {
+      fetchStats();
+    }
+  }, [warrior.steamId]);
+
 
   const handleEditSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
