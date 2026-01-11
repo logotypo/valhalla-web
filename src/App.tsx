@@ -15,10 +15,12 @@ import AdminDashboard from './pages/AdminDashboard';
 import OdinAssistant from './components/OdinAssistant';
 import SteamIDEnforcer from './components/SteamIDEnforcer';
 import ProtectedRoute from './components/ProtectedRoute';
+import ScrollToTop from './components/ScrollToTop';
 
 const App: React.FC = () => {
   return (
     <HashRouter>
+      <ScrollToTop />
       <SteamIDEnforcer />
       <div className="flex flex-col min-h-screen selection:bg-primary selection:text-black">
         <Navbar />

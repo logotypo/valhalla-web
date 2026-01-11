@@ -8,6 +8,7 @@ interface UserData {
     full_name: string;
     email: string;
     steam_id: string;
+    whitelist_status: string;
     role: string;
     donations: {
         package_name: string;
@@ -40,6 +41,20 @@ const AdminDashboard: React.FC = () => {
             // Update local state
             setUsers(prev => prev.map(u => u.id === userId ? { ...u, role: newRole } : u));
             alert('Rol actualizado correctamente.');
+        }
+    };
+
+    const handleVerifySteamId = async (userId: string) => {
+        const { error } = await supabase
+            .from('profiles')
+            .update({ whitelist_status: 'Aprobado' })
+            .eq('id', userId);
+
+        if (error) {
+            alert('Error al verificar Steam ID: ' + error.message);
+        } else {
+            setUsers(prev => prev.map(u => u.id === userId ? { ...u, whitelist_status: 'Aprobado' } : u));
+            // alert('Steam ID verificado correctamente.'); // Optional feedback
         }
     };
 
@@ -218,7 +233,25 @@ const AdminDashboard: React.FC = () => {
                                                 </div>
                                             </td>
                                             <td className="p-6 font-mono text-xs text-gray-400">
-                                                {user.steam_id || "No registrado"}
+                                                <div className="flex flex-col gap-1">
+                                                    <span>{user.steam_id || "No registrado"}</span>
+                                                    {user.steam_id && (
+                                                        <div className="flex items-center gap-2">
+                                                            {user.whitelist_status === 'Aprobado' ? (
+                                                                <span className="text-green-500 flex items-center gap-1 text-[9px] font-black uppercase tracking-widest">
+                                                                    <span className="material-symbols-outlined text-sm">verified</span> Verified
+                                                                </span>
+                                                            ) : (
+                                                                <button
+                                                                    onClick={() => handleVerifySteamId(user.id)}
+                                                                    className="bg-yellow-500/10 text-yellow-500 border border-yellow-500/20 px-2 py-1 text-[9px] font-black uppercase tracking-widest hover:bg-yellow-500 hover:text-black transition-colors"
+                                                                >
+                                                                    Verificar
+                                                                </button>
+                                                            )}
+                                                        </div>
+                                                    )}
+                                                </div>
                                             </td>
                                             <td className="p-6">
                                                 <select
