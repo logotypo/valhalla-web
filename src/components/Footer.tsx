@@ -16,7 +16,7 @@ const Footer: React.FC = () => {
           <div>
             <h4 className="text-primary font-bold uppercase tracking-widest text-xs mb-6">Navegación</h4>
             <ul className="space-y-3 text-sm text-gray-400">
-              <li><Link to="/whitelist" className="hover:text-white transition-colors">Solicitar Whitelist</Link></li>
+
               <li><Link to="/donations" className="hover:text-white transition-colors">Tienda de Supervivencia</Link></li>
               <li><Link to="/rules" className="hover:text-white transition-colors">Código de Honor</Link></li>
             </ul>
