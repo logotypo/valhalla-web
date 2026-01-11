@@ -31,46 +31,28 @@ async function fetchDiscordMessages() {
 
 function parseMessage(msg) {
     try {
-        // 1. Try Parse from Content (Old Text method)
-        if (msg.content) {
-            const killerRegex = /Killer\s*\[blue\]\s*\n(.+?)\s+SteamID:\s*(.+?)(\n|$)/i;
-            const victimRegex = /Victim\s*\[red\]\s*\n(.+?)\s+SteamID:\s*(.+?)(\n|$)/i;
-            const killerMatch = msg.content.match(killerRegex);
-            const victimMatch = msg.content.match(victimRegex);
+        let killerName, killerSteamId, victimName, victimSteamId, weapon, distance;
 
-            if (killerMatch && victimMatch) {
-                return {
-                    discord_message_id: msg.id,
-                    timestamp: msg.timestamp,
-                    killer_name: killerMatch[1].trim(),
-                    killer_steam_id: killerMatch[2].trim(),
-                    victim_name: victimMatch[1].trim(),
-                    victim_steam_id: victimMatch[2].trim(),
-                    weapon: 'Unknown', // regex for weapon/distance on plain text left out for brevity as embeds are likely
-                    distance: 'Unknown'
-                };
-            }
-        }
+        // Helper to parse "Name SteamID: ID"
+        // Regex matches "Name SteamID: 12345"
+        const parseIdentity = (text) => {
+            if (!text) return null;
+            const match = text.match(/(.+?)\s+SteamID:\s*(\d+)/i);
+            return match ? { name: match[1].trim(), steamId: match[2].trim() } : null;
+        };
 
-        // 2. Try Parse from Embeds (New Visual method)
+        // 1. Check Embeds (Priority because ValhallaBot uses embeds)
         if (msg.embeds && msg.embeds.length > 0) {
             const embed = msg.embeds[0];
-            let killerName, killerSteamId, victimName, victimSteamId, weapon, distance;
 
-            // Helper to parse "Name SteamID: ID"
-            const parseIdentity = (text) => {
-                const match = text.match(/(.+?)\s+SteamID:\s*(\d+)/i);
-                return match ? { name: match[1].trim(), steamId: match[2].trim() } : null;
-            };
-
-            // Search in Fields
+            // A. Search in Fields
             if (embed.fields) {
                 for (const field of embed.fields) {
-                    if (field.name.includes('Killer [blue]')) {
+                    if (field.name.includes('Killer')) {
                         const data = parseIdentity(field.value);
                         if (data) { killerName = data.name; killerSteamId = data.steamId; }
                     }
-                    if (field.name.includes('Victim [red]')) {
+                    if (field.name.includes('Victim')) {
                         const data = parseIdentity(field.value);
                         if (data) { victimName = data.name; victimSteamId = data.steamId; }
                     }
@@ -79,28 +61,58 @@ function parseMessage(msg) {
                 }
             }
 
-            // Fallback: Search in Description if fields are not clear (some bots put everything in desc)
+            // B. Fallback: Search in Description
             if ((!killerName || !victimName) && embed.description) {
-                const killerRegex = /Killer\s*\[blue\]\s*\n(.+?)\s+SteamID:\s*(.+?)(\n|$)/i;
-                const victimRegex = /Victim\s*\[red\]\s*\n(.+?)\s+SteamID:\s*(.+?)(\n|$)/i;
-                const kMatch = embed.description.match(killerRegex);
-                const vMatch = embed.description.match(victimRegex);
-                if (kMatch) { killerName = kMatch[1].trim(); killerSteamId = kMatch[2].trim(); }
-                if (vMatch) { victimName = vMatch[1].trim(); victimSteamId = vMatch[2].trim(); }
-            }
+                const lines = embed.description.split('\n');
+                let currentRole = null;
 
-            if (killerName && victimName) {
-                return {
-                    discord_message_id: msg.id,
-                    timestamp: msg.timestamp,
-                    killer_name: killerName,
-                    killer_steam_id: killerSteamId,
-                    victim_name: victimName,
-                    victim_steam_id: victimSteamId,
-                    weapon: weapon || null,
-                    distance: distance || null
-                };
+                for (const line of lines) {
+                    if (line.includes('Killer')) currentRole = 'killer';
+                    else if (line.includes('Victim')) currentRole = 'victim';
+
+                    if (line.includes('SteamID')) {
+                        const data = parseIdentity(line);
+                        if (data) {
+                            if (currentRole === 'killer') { killerName = data.name; killerSteamId = data.steamId; }
+                            if (currentRole === 'victim') { victimName = data.name; victimSteamId = data.steamId; }
+                        }
+                    }
+                }
+
+                // Try regex on full description if loop failed
+                if (!killerName) {
+                    const kMatch = embed.description.match(/Killer.*?\[blue\].*?\n(.+?)\s+SteamID:\s*(\d+)/i);
+                    if (kMatch) { killerName = kMatch[1].trim(); killerSteamId = kMatch[2].trim(); }
+                }
+                if (!victimName) {
+                    const vMatch = embed.description.match(/Victim.*?\[red\].*?\n(.+?)\s+SteamID:\s*(\d+)/i);
+                    if (vMatch) { victimName = vMatch[1].trim(); victimSteamId = vMatch[2].trim(); }
+                }
             }
+        }
+
+        // 2. Fallback to Content (Text)
+        if ((!killerName || !victimName) && msg.content) {
+            const killerRegex = /Killer\s*\[blue\]\s*\n(.+?)\s+SteamID:\s*(.+?)(\n|$)/i;
+            const victimRegex = /Victim\s*\[red\]\s*\n(.+?)\s+SteamID:\s*(.+?)(\n|$)/i;
+            const killerMatch = msg.content.match(killerRegex);
+            const victimMatch = msg.content.match(victimRegex);
+
+            if (killerMatch) { killerName = killerMatch[1].trim(); killerSteamId = killerMatch[2].trim(); }
+            if (victimMatch) { victimName = victimMatch[1].trim(); victimSteamId = victimMatch[2].trim(); }
+        }
+
+        if (killerName && victimName) {
+            return {
+                discord_message_id: msg.id,
+                timestamp: msg.timestamp, // REST API uses .timestamp (ISO String)
+                killer_name: killerName,
+                killer_steam_id: killerSteamId,
+                victim_name: victimName,
+                victim_steam_id: victimSteamId,
+                weapon: weapon || 'Desconocido',
+                distance: distance || '?'
+            };
         }
 
         return null;
