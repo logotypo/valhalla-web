@@ -26,7 +26,7 @@ const Footer: React.FC = () => {
             <ul className="space-y-3 text-sm text-gray-400">
               <li><a href="https://discord.gg/v5kJUtwYdw" target="_blank" rel="noreferrer" className="hover:text-white transition-colors">Discord Oficial</a></li>
               <li><a href="#" className="hover:text-white transition-colors">Steam Group</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Facebook</a></li>
+              <li><a href="https://www.youtube.com/@EspValhallaSCUM" target="_blank" rel="noreferrer" className="hover:text-white transition-colors">YouTube</a></li>
             </ul>
           </div>
         </div>
