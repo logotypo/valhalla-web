@@ -437,13 +437,42 @@ const Profile: React.FC = () => {
           </div>
         </div>
 
+  // Fetch Kill Stats
+  useEffect(() => {
+    const fetchStats = async () => {
+      if (!warrior.steamId) return;
+
+        // Count Kills
+        const {count: killsCount } = await supabase
+        .from('kill_events')
+        .select('*', {count: 'exact', head: true })
+        .eq('killer_steam_id', warrior.steamId);
+
+        // Count Deaths
+        const {count: deathsCount } = await supabase
+        .from('kill_events')
+        .select('*', {count: 'exact', head: true })
+        .eq('victim_steam_id', warrior.steamId);
+
+      setWarrior(prev => ({
+          ...prev,
+          kills: killsCount || 0,
+        deaths: deathsCount || 0
+      }));
+    };
+
+        if (warrior.steamId && warrior.steamId !== 'No vinculado') {
+          fetchStats();
+    }
+  }, [warrior.steamId]);
+
         {/* Stats Grid */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
           {[
             { label: "Honor", value: warrior.honor, icon: "verified" },
             { label: "Bajas", value: warrior.kills, icon: "skull" },
             { label: "Muertes", value: warrior.deaths, icon: "heart_broken" },
-            { label: "Supervivencia", value: warrior.survivalTime, icon: "timer" },
+            { label: "K/D Ratio", value: warrior.deaths > 0 ? (warrior.kills / warrior.deaths).toFixed(2) : warrior.kills, icon: "analytics" },
           ].map((stat, i) => (
             <div key={i} className="bg-surface-dark/90 backdrop-blur-sm border border-white/5 p-6 rounded-sm group hover:border-primary/30 transition-all">
               <div className="flex items-center gap-3 mb-4 text-primary/60">
