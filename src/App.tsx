@@ -13,10 +13,12 @@ import Auth from './pages/Auth';
 import Profile from './pages/Profile';
 import AdminDashboard from './pages/AdminDashboard';
 import OdinAssistant from './components/OdinAssistant';
+import SteamIDEnforcer from './components/SteamIDEnforcer';
 
 const App: React.FC = () => {
   return (
     <HashRouter>
+      <SteamIDEnforcer />
       <div className="flex flex-col min-h-screen selection:bg-primary selection:text-black">
         <Navbar />
 
