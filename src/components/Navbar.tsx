@@ -54,7 +54,7 @@ const Navbar: React.FC = () => {
     { name: 'Calendario', path: '/calendar' },
     { name: 'Reglas', path: '/rules' },
     { name: 'Comunidad', path: '/community' },
-    { name: 'Comunidad', path: '/community' },
+
     ...(isAdmin ? [
       { name: 'Admin', path: '/admin' },
       { name: 'KitDonato', path: '/kit-claims' }
