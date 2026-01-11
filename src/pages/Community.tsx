@@ -37,7 +37,7 @@ const Community: React.FC = () => {
           <p className="text-gray-400 max-w-xl mx-auto mb-10 text-lg">
             Únete a nuestra comunidad de Discord para recibir noticias en tiempo real, soporte técnico y coordinar ataques con tu clan.
           </p>
-          <a href="#" className="inline-flex items-center gap-4 bg-accent-red hover:bg-red-700 text-white font-black px-12 py-5 rounded-sm uppercase tracking-widest transition-all shadow-2xl shadow-red-900/30">
+          <a href="https://discord.gg/v5kJUtwYdw" target="_blank" rel="noreferrer" className="inline-flex items-center gap-4 bg-accent-red hover:bg-red-700 text-white font-black px-12 py-5 rounded-sm uppercase tracking-widest transition-all shadow-2xl shadow-red-900/30">
             <span className="material-symbols-outlined text-2xl">chat</span>
             Entrar al Discord
           </a>
