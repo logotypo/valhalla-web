@@ -123,7 +123,7 @@ const Donations: React.FC = () => {
         'Estatus VIP en la web',
         'Acceso WhiteList',
         'Badge en Discord',
-        'Kit de inicio básico 1 Paquete',
+        'Kit de inicio básico 1',
         'Acceso a eventos exclusivos',
         'No se puede reclamar el paquete en zona PVP, a no ser que seas @RaidersPVP y lo pidas en tu base.'
       ]
@@ -145,7 +145,7 @@ const Donations: React.FC = () => {
         'Estatus VIP en la web',
         'Acceso WhiteList',
         'Badge VIP en Discord',
-        'Kit de inicio básico 2 Paquete + DirtBike',
+        'Kit de inicio 2 + DirtBike',
         'Acceso a eventos exclusivos VIP',
         'No se puede reclamar el paquete en zona PVP, a no ser que seas @RaidersPVP y lo pidas en tu base.',
         'Los vehículos del paquete están sujetos a la normativa.'
@@ -167,7 +167,7 @@ const Donations: React.FC = () => {
         'Estatus VIP en la web',
         'Acceso WhiteList',
         'Rango Jarl en Discord',
-        'Kit de inicio básico 2 Paquete + RIS mensual.',
+        'Kit de inicio 3+ RIS.',
         'Acceso a eventos exclusivos VIP',
         'No se puede reclamar el paquete en zona PVP, a no ser que seas @RaidersPVP y lo pidas en tu base.',
         'Los vehículos del paquete están sujetos a la normativa.'

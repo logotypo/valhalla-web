@@ -16,6 +16,19 @@ const Events: React.FC = () => {
   const [activeEvents, setActiveEvents] = useState<GameEvent[]>([]);
   const [loading, setLoading] = useState(true);
   const [canManage, setCanManage] = useState(false); // Permission state
+  const [expandedEvents, setExpandedEvents] = useState<Set<string>>(new Set());
+
+  const toggleExpand = (id: string) => {
+    setExpandedEvents(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(id)) {
+        newSet.delete(id);
+      } else {
+        newSet.add(id);
+      }
+      return newSet;
+    });
+  };
 
   useEffect(() => {
     const fetchActiveEvents = async () => {
@@ -141,7 +154,17 @@ const Events: React.FC = () => {
                     </button>
                   )}
                 </div>
-                <p className="text-gray-400 text-lg leading-relaxed whitespace-pre-wrap">{ev.description}</p>
+                <div className="text-gray-400 text-lg leading-relaxed whitespace-pre-wrap">
+                  {expandedEvents.has(ev.id) ? ev.description : `${ev.description.slice(0, 250)}${ev.description.length > 250 ? '...' : ''}`}
+                  {ev.description.length > 250 && (
+                    <button
+                      onClick={() => toggleExpand(ev.id)}
+                      className="ml-2 text-primary font-bold hover:text-white transition-colors text-sm uppercase tracking-wider"
+                    >
+                      {expandedEvents.has(ev.id) ? ' [Leer menos]' : ' [Leer más]'}
+                    </button>
+                  )}
+                </div>
 
                 {ev.end_time && (
                   <div className="flex items-center gap-4 text-sm text-gray-500 font-bold uppercase">
