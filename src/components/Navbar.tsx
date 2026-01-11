@@ -121,7 +121,7 @@ const Navbar: React.FC = () => {
               )}
 
               <a
-                href="https://discord.gg/valhallascum"
+                href="https://discord.gg/v5kJUtwYdw"
                 target="_blank"
                 rel="noreferrer"
                 className="bg-accent-red text-white px-5 py-2 rounded-sm font-black text-[10px] transition-all uppercase tracking-[0.2em] hover:bg-red-700 shadow-lg shadow-red-900/20"
@@ -180,7 +180,7 @@ const Navbar: React.FC = () => {
           </div>
 
           <div className="pt-6 border-t border-white/5">
-            <a href="https://discord.gg/valhallascum" className="flex justify-center items-center bg-accent-red text-white py-4 font-black uppercase tracking-[0.2em] text-[10px] rounded-sm">
+            <a href="https://discord.gg/v5kJUtwYdw" className="flex justify-center items-center bg-accent-red text-white py-4 font-black uppercase tracking-[0.2em] text-[10px] rounded-sm">
               Discord Oficial
             </a>
           </div>
