@@ -298,9 +298,9 @@ const Profile: React.FC = () => {
               <h1 className="text-4xl md:text-6xl font-display font-black text-white uppercase tracking-tighter leading-none">
                 {warrior.name}
               </h1>
-              <div className={`inline-block px-3 py-1 text-[10px] font-black uppercase tracking-widest border mb-2 md:mb-1 ${warrior.whitelistStatus === 'Validado' ? 'bg-green-500/10 text-green-500 border-green-500/20' : 'bg-orange-500/10 text-orange-500 border-orange-500/20'
+              <div className={`inline-block px-3 py-1 text-[10px] font-black uppercase tracking-widest border mb-2 md:mb-1 ${warrior.whitelistStatus === 'Aprobado' || warrior.whitelistStatus === 'Validado' ? 'bg-green-500/10 text-green-500 border-green-500/20' : 'bg-orange-500/10 text-orange-500 border-orange-500/20'
                 }`}>
-                {warrior.whitelistStatus}
+                {warrior.whitelistStatus === 'Aprobado' ? 'Validado' : warrior.whitelistStatus}
               </div>
             </div>
 
@@ -388,15 +388,15 @@ const Profile: React.FC = () => {
                   Estatus de Acceso (Whitelist)
                 </h3>
                 <div className="flex items-center gap-6">
-                  <div className={`size-16 rounded-full flex items-center justify-center border-2 ${warrior.whitelistStatus === 'Validado' ? 'border-green-500 text-green-500' : 'border-orange-500 text-orange-500'}`}>
+                  <div className={`size-16 rounded-full flex items-center justify-center border-2 ${warrior.whitelistStatus === 'Aprobado' || warrior.whitelistStatus === 'Validado' ? 'border-green-500 text-green-500' : 'border-orange-500 text-orange-500'}`}>
                     <span className="material-symbols-outlined text-3xl">
-                      {warrior.whitelistStatus === 'Validado' ? 'check_circle' : 'pending'}
+                      {warrior.whitelistStatus === 'Aprobado' || warrior.whitelistStatus === 'Validado' ? 'check_circle' : 'pending'}
                     </span>
                   </div>
                   <div>
                     <p className="text-white text-sm font-bold uppercase">Estado: {warrior.whitelistStatus}</p>
                     <p className="text-gray-500 text-xs font-body mt-1">
-                      {warrior.whitelistStatus === 'Validado'
+                      {warrior.whitelistStatus === 'Aprobado' || warrior.whitelistStatus === 'Validado'
                         ? "Tu acceso está garantizado por los dioses. ¡A las armas!"
                         : "Tu Steam ID está siendo revisado por los guardianes. Regresa en 24 lunas."}
                     </p>
