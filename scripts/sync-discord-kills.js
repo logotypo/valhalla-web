@@ -29,39 +29,83 @@ async function fetchDiscordMessages() {
     return response.json();
 }
 
-function parseMessage(content, id, timestamp) {
+function parseMessage(msg) {
     try {
-        // Regex Patterns - Made more robust with [\s\S]*? for multiline matching
-        // Killer [blue] (newline) (Name) SteamID: (ID)
-        const killerRegex = /Killer\s*\[blue\]\s*\n(.+?)\s+SteamID:\s*(.+?)(\n|$)/i;
-        const victimRegex = /Victim\s*\[red\]\s*\n(.+?)\s+SteamID:\s*(.+?)(\n|$)/i;
+        // 1. Try Parse from Content (Old Text method)
+        if (msg.content) {
+            const killerRegex = /Killer\s*\[blue\]\s*\n(.+?)\s+SteamID:\s*(.+?)(\n|$)/i;
+            const victimRegex = /Victim\s*\[red\]\s*\n(.+?)\s+SteamID:\s*(.+?)(\n|$)/i;
+            const killerMatch = msg.content.match(killerRegex);
+            const victimMatch = msg.content.match(victimRegex);
 
-        // Weapon (newline) (Name)
-        const weaponRegex = /Weapon\s*\n(.+?)(\n|$)/i;
-        const distanceRegex = /Distance\s*\n(.+?)(\n|$)/i;
-
-        const killerMatch = content.match(killerRegex);
-        const victimMatch = content.match(victimRegex);
-        const weaponMatch = content.match(weaponRegex);
-        const distanceMatch = content.match(distanceRegex);
-
-        if (!killerMatch || !victimMatch) {
-            // console.log(`Skipping message ${id}: No match found.`);
-            return null;
+            if (killerMatch && victimMatch) {
+                return {
+                    discord_message_id: msg.id,
+                    timestamp: msg.timestamp,
+                    killer_name: killerMatch[1].trim(),
+                    killer_steam_id: killerMatch[2].trim(),
+                    victim_name: victimMatch[1].trim(),
+                    victim_steam_id: victimMatch[2].trim(),
+                    weapon: 'Unknown', // regex for weapon/distance on plain text left out for brevity as embeds are likely
+                    distance: 'Unknown'
+                };
+            }
         }
 
-        return {
-            discord_message_id: id,
-            timestamp: timestamp,
-            killer_name: killerMatch[1].trim(),
-            killer_steam_id: killerMatch[2].trim(),
-            victim_name: victimMatch[1].trim(),
-            victim_steam_id: victimMatch[2].trim(),
-            weapon: weaponMatch ? weaponMatch[1].trim() : null,
-            distance: distanceMatch ? distanceMatch[1].trim() : null
-        };
+        // 2. Try Parse from Embeds (New Visual method)
+        if (msg.embeds && msg.embeds.length > 0) {
+            const embed = msg.embeds[0];
+            let killerName, killerSteamId, victimName, victimSteamId, weapon, distance;
+
+            // Helper to parse "Name SteamID: ID"
+            const parseIdentity = (text) => {
+                const match = text.match(/(.+?)\s+SteamID:\s*(\d+)/i);
+                return match ? { name: match[1].trim(), steamId: match[2].trim() } : null;
+            };
+
+            // Search in Fields
+            if (embed.fields) {
+                for (const field of embed.fields) {
+                    if (field.name.includes('Killer [blue]')) {
+                        const data = parseIdentity(field.value);
+                        if (data) { killerName = data.name; killerSteamId = data.steamId; }
+                    }
+                    if (field.name.includes('Victim [red]')) {
+                        const data = parseIdentity(field.value);
+                        if (data) { victimName = data.name; victimSteamId = data.steamId; }
+                    }
+                    if (field.name.includes('Weapon')) weapon = field.value;
+                    if (field.name.includes('Distance')) distance = field.value;
+                }
+            }
+
+            // Fallback: Search in Description if fields are not clear (some bots put everything in desc)
+            if ((!killerName || !victimName) && embed.description) {
+                const killerRegex = /Killer\s*\[blue\]\s*\n(.+?)\s+SteamID:\s*(.+?)(\n|$)/i;
+                const victimRegex = /Victim\s*\[red\]\s*\n(.+?)\s+SteamID:\s*(.+?)(\n|$)/i;
+                const kMatch = embed.description.match(killerRegex);
+                const vMatch = embed.description.match(victimRegex);
+                if (kMatch) { killerName = kMatch[1].trim(); killerSteamId = kMatch[2].trim(); }
+                if (vMatch) { victimName = vMatch[1].trim(); victimSteamId = vMatch[2].trim(); }
+            }
+
+            if (killerName && victimName) {
+                return {
+                    discord_message_id: msg.id,
+                    timestamp: msg.timestamp,
+                    killer_name: killerName,
+                    killer_steam_id: killerSteamId,
+                    victim_name: victimName,
+                    victim_steam_id: victimSteamId,
+                    weapon: weapon || null,
+                    distance: distance || null
+                };
+            }
+        }
+
+        return null;
     } catch (err) {
-        console.warn(`Error parsing message ${id}:`, err);
+        console.warn(`Error parsing message ${msg.id}:`, err);
         return null;
     }
 }
@@ -72,17 +116,16 @@ async function sync() {
         const messages = await fetchDiscordMessages();
         console.log(`Fetched ${messages.length} messages.`);
 
+        // DEBUG: Log the structure of the first message to verify format
         if (messages.length > 0) {
-            console.log('--- SAMPLE MESSAGE START ---');
-            console.log(messages[0].content);
-            console.log('--- SAMPLE MESSAGE END ---');
+            console.log('--- MSG STRUCTURE ---');
+            console.log(JSON.stringify(messages[0], null, 2));
+            console.log('---------------------');
         }
 
         const events = [];
         for (const msg of messages) {
-            if (!msg.content) continue;
-
-            const parsed = parseMessage(msg.content, msg.id, msg.timestamp);
+            const parsed = parseMessage(msg);
             if (parsed) {
                 events.push(parsed);
             }
