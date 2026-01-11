@@ -26,7 +26,8 @@ const Auth: React.FC = () => {
             data: {
               full_name: name,
               warrior_name: name
-            }
+            },
+            emailRedirectTo: 'https://valhallascum.com/'
           }
         });
 
