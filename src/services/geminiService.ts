@@ -1,8 +1,6 @@
 
 import { GoogleGenAI } from "@google/genai";
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || '' });
-
 const SYSTEM_INSTRUCTION = `
 You are "Odin's Oracle", the official AI assistant for the VALHALLA SCUM Server. 
 Your personality: Stoic, wise, Viking-themed, but helpful. Use terms like "prisoner", "survivor", "destiny", and "honor". 
@@ -22,10 +20,20 @@ Instructions:
 4. Keep answers concise but atmospheric.
 `;
 
+let ai: GoogleGenAI | null = null;
+
+const getAiClient = () => {
+  if (!ai) {
+    ai = new GoogleGenAI({ apiKey: process.env.API_KEY || '' });
+  }
+  return ai;
+};
+
 export const getOdinAdvice = async (userMessage: string) => {
   try {
-    const response = await ai.models.generateContent({
-      model: 'gemini-3-flash-preview',
+    const client = getAiClient();
+    const response = await client.models.generateContent({
+      model: 'gemini-1.5-flash',
       contents: userMessage,
       config: {
         systemInstruction: SYSTEM_INSTRUCTION,
