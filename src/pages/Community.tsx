@@ -4,7 +4,7 @@ import { supabase } from '../supabase';
 
 const Community: React.FC = () => {
   const staff = [
-    { name: '[̅𝗟̲̅𝗼̲̅𝗿̲̅𝗱̲̅𝗕̲̅𝗶̲̅𝗿̲̅𝗿̲̅𝗮̲̅𝘀̲̲̅]', role: 'Server Owner', icon: 'crown' },
+    { name: '[̅L̲̅o̲̅r̲̅d̲̅B̲̅i̲̅r̲̅r̲̅a̲̅s̲̲̅]', role: 'Server Owner', icon: 'crown' },
     { name: '[̅N̲̅a̲̅l̲̅u̲̲̅]', role: 'Head Admin', icon: 'diamond' },
     { name: '[̅𝗦̲̅𝘂̲̅𝗯̲̅𝗮̲̅𝗿̲̅𝘂̲̲̅]', role: 'Moderator', icon: 'visibility' },
     { name: '[̅G̲̅o̲̅b̲̅e̲̅r̲̅n̲̅a̲̅d̲̅o̲̅r̲̲̅]', role: 'Community Lead', icon: 'shield' },
