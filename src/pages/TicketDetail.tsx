@@ -187,13 +187,23 @@ const TicketDetail: React.FC = () => {
     // Helper to render media
     const renderAttachment = (attachment: any) => {
         const url = supabase.storage.from('tickets-media').getPublicUrl(attachment.file_path).data.publicUrl;
-        if (attachment.file_type.startsWith('image/')) {
-            return <img src={url} alt="Attachment" className="max-w-[200px] rounded-sm mt-2 border border-white/10" />;
+        const type = attachment.file_type || '';
+        const ext = attachment.file_path.split('.').pop()?.toLowerCase();
+
+        const isImage = type.startsWith('image/') || ['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(ext);
+        const isVideo = type.startsWith('video/') || ['mp4', 'webm', 'ogg', 'mov', 'quicktime'].includes(ext);
+
+        if (isImage) {
+            return (
+                <a href={url} target="_blank" rel="noreferrer">
+                    <img src={url} alt="Attachment" className="max-w-[200px] rounded-sm mt-2 border border-white/10 hover:opacity-90 transition-opacity" />
+                </a>
+            );
         }
-        if (attachment.file_type.startsWith('video/')) {
+        if (isVideo) {
             return <video src={url} controls className="max-w-[300px] rounded-sm mt-2 border border-white/10" />;
         }
-        return <a href={url} target="_blank" className="text-primary underline text-xs mt-2 block">{attachment.file_path}</a>;
+        return <a href={url} target="_blank" className="text-primary underline text-xs mt-2 block">{attachment.file_path.split('/').pop()}</a>;
     };
 
     if (!ticket) return <div className="p-20 text-center text-white">Cargando...</div>;
