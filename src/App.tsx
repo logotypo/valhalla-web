@@ -19,6 +19,7 @@ import KitClaims from './pages/KitClaims';
 import OdinAssistant from './components/OdinAssistant';
 import SteamIDEnforcer from './components/SteamIDEnforcer';
 import ProtectedRoute from './components/ProtectedRoute';
+import AdminRoute from './components/AdminRoute';
 import ScrollToTop from './components/ScrollToTop';
 import Leaderboard from './pages/Leaderboard';
 
@@ -35,19 +36,19 @@ const App: React.FC = () => {
             <Route path="/" element={<Home />} />
             <Route path="/join" element={<Auth />} />
             <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
-            <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
-            <Route path="/kit-claims" element={<ProtectedRoute><KitClaims /></ProtectedRoute>} />
+            <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
+            <Route path="/kit-claims" element={<AdminRoute><KitClaims /></AdminRoute>} />
             <Route path="/donations" element={<ProtectedRoute><Donations /></ProtectedRoute>} />
             <Route path="/events" element={<ProtectedRoute><Events /></ProtectedRoute>} />
             <Route path="/rules" element={<ProtectedRoute><Rules /></ProtectedRoute>} />
             <Route path="/community" element={<ProtectedRoute><Community /></ProtectedRoute>} />
-            <Route path="/calendar" element={<ProtectedRoute><Future /></ProtectedRoute>} />
-            <Route path="/leaderboard" element={<Leaderboard />} />
+            <Route path="/calendar" element={<AdminRoute><Future /></AdminRoute>} />
+            <Route path="/leaderboard" element={<AdminRoute><Leaderboard /></AdminRoute>} />
 
             {/* Ticket Routes */}
             <Route path="/tickets" element={<Tickets />} />
             <Route path="/tickets/:id" element={<ProtectedRoute><TicketDetail /></ProtectedRoute>} />
-            <Route path="/admin/tickets" element={<ProtectedRoute><AdminTickets /></ProtectedRoute>} />
+            <Route path="/admin/tickets" element={<AdminRoute><AdminTickets /></AdminRoute>} />
           </Routes>
         </main>
 
