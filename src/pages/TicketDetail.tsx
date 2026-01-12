@@ -201,7 +201,27 @@ const TicketDetail: React.FC = () => {
             );
         }
         if (isVideo) {
-            return <video src={url} controls className="max-w-[300px] rounded-sm mt-2 border border-white/10" />;
+            return (
+                <div className="mt-2">
+                    <video
+                        src={url}
+                        controls
+                        playsInline
+                        className="max-w-[300px] w-full rounded-sm border border-white/10 bg-black"
+                    >
+                        Tu navegador no soporta la reproducción de este video.
+                    </video>
+                    <a
+                        href={url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="flex items-center gap-1 text-[10px] text-primary/70 hover:text-primary mt-1 uppercase font-black tracking-wider transition-colors"
+                    >
+                        <span className="material-symbols-outlined text-[12px]">download</span>
+                        Descargar Video
+                    </a>
+                </div>
+            );
         }
         return <a href={url} target="_blank" className="text-primary underline text-xs mt-2 block">{attachment.file_path.split('/').pop()}</a>;
     };
