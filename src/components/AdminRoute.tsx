@@ -2,7 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
 import { supabase } from '../supabase';
 
-const AdminRoute: React.FC = () => {
+interface AdminRouteProps {
+    children?: React.ReactNode;
+}
+
+const AdminRoute: React.FC<AdminRouteProps> = ({ children }) => {
     const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
     const [loading, setLoading] = useState(true);
     const [debugInfo, setDebugInfo] = useState<any>(null);
@@ -62,7 +66,7 @@ const AdminRoute: React.FC = () => {
         );
     }
 
-    return <Outlet />;
+    return children ? <>{children}</> : <Outlet />;
 };
 
 export default AdminRoute;
