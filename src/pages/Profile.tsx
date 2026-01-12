@@ -198,33 +198,41 @@ const Profile: React.FC = () => {
     fetchUploads();
   }, []);
 
-  // Fetch Kill Stats
+  // Fetch Recent Battle History
+  const [battleHistory, setBattleHistory] = useState<any[]>([]);
+
   useEffect(() => {
-    const fetchStats = async () => {
-      if (!warrior.steamId) return;
+    const fetchHistory = async () => {
+      if (!warrior.steamId || warrior.steamId === 'No vinculado') return;
 
-      // Count Kills
-      const { count: killsCount } = await supabase
+      // 1. Get recent battles
+      const { data } = await supabase
         .from('kill_events')
-        .select('*', { count: 'exact', head: true })
-        .eq('killer_steam_id', warrior.steamId);
+        .select('*')
+        .or(`killer_steam_id.eq.${warrior.steamId},victim_steam_id.eq.${warrior.steamId}`)
+        .order('timestamp', { ascending: false })
+        .limit(10);
 
-      // Count Deaths
-      const { count: deathsCount } = await supabase
-        .from('kill_events')
-        .select('*', { count: 'exact', head: true })
-        .eq('victim_steam_id', warrior.steamId);
+      if (data) {
+        setBattleHistory(data);
+      }
 
-      setWarrior(prev => ({
-        ...prev,
-        kills: killsCount || 0,
-        deaths: deathsCount || 0
-      }));
+      // 2. Get accurate total stats from view
+      const { data: stats } = await supabase
+        .from('leaderboard_view')
+        .select('kills, deaths')
+        .eq('steam_id', warrior.steamId)
+        .maybeSingle();
+
+      if (stats) {
+        setWarrior(prev => ({
+          ...prev,
+          kills: stats.kills,
+          deaths: stats.deaths
+        }));
+      }
     };
-
-    if (warrior.steamId && warrior.steamId !== 'No vinculado') {
-      fetchStats();
-    }
+    fetchHistory();
   }, [warrior.steamId]);
 
 
@@ -543,6 +551,52 @@ const Profile: React.FC = () => {
                 </div>
               </div>
             </section>
+
+            {/* Battle History Section */}
+            {battleHistory.length > 0 && (
+              <section>
+                <h3 className="text-xl font-display font-bold text-white uppercase tracking-widest mb-6 border-b border-primary/20 pb-4 flex items-center gap-3">
+                  <span className="material-symbols-outlined text-primary">history_edu</span>
+                  Historial de Batalla (Últimos 10)
+                </h3>
+                <div className="space-y-2">
+                  {battleHistory.map((battle) => {
+                    const isKiller = battle.killer_steam_id === warrior.steamId;
+                    const opponentName = isKiller ? battle.victim_name : battle.killer_name;
+                    // Enmascarar nombre: Primera letra + asteriscos fijos para no revelar longitud
+                    const maskedName = opponentName ? `${opponentName.charAt(0)}*******` : '********';
+
+                    // Limpiar nombre del arma
+                    const cleanWeapon = battle.weapon ? battle.weapon.replace(/^Weapon_/, '').replace(/_C$/, '').replace(/\[.*?\]/, '').replace(/_/g, ' ') : 'Desconocida';
+
+                    return (
+                      <div key={battle.id} className={`p-4 border-l-4 ${isKiller ? 'border-green-500 bg-green-500/5' : 'border-red-500 bg-red-500/5'} bg-black/40 flex flex-col md:flex-row items-start md:items-center justify-between gap-4`}>
+                        <div className="flex items-center gap-4">
+                          <span className={`material-symbols-outlined text-2xl ${isKiller ? 'text-green-500' : 'text-red-500'}`}>
+                            {isKiller ? 'swords' : 'skull'}
+                          </span>
+                          <div>
+                            <p className="text-white font-bold text-sm uppercase">
+                              {isKiller ? (
+                                <>Has eliminado a <span className="text-red-400">{maskedName}</span></>
+                              ) : (
+                                <>Eliminado por <span className="text-green-400">{maskedName}</span></>
+                              )}
+                            </p>
+                            <div className="bg-primary text-black text-[10px] font-black uppercase tracking-tight px-2 py-0.5 mt-1 inline-block">
+                              Arma: {cleanWeapon} • Dist: {battle.distance || '?'}
+                            </div>
+                          </div>
+                        </div>
+                        <div className="text-[10px] text-gray-600 font-mono uppercase tracking-widest">
+                          {new Date(battle.timestamp).toLocaleDateString()} {new Date(battle.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </section>
+            )}
           </div>
 
           {/* Sidebar Column */}

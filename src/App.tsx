@@ -4,6 +4,9 @@ import { HashRouter, Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Home from './pages/Home';
+import Tickets from './pages/Tickets';
+import TicketDetail from './pages/TicketDetail';
+import AdminTickets from './pages/AdminTickets';
 import Donations from './pages/Donations';
 import Events from './pages/Events';
 import Rules from './pages/Rules';
@@ -17,6 +20,7 @@ import OdinAssistant from './components/OdinAssistant';
 import SteamIDEnforcer from './components/SteamIDEnforcer';
 import ProtectedRoute from './components/ProtectedRoute';
 import ScrollToTop from './components/ScrollToTop';
+import Leaderboard from './pages/Leaderboard';
 
 const App: React.FC = () => {
   return (
@@ -38,6 +42,12 @@ const App: React.FC = () => {
             <Route path="/rules" element={<ProtectedRoute><Rules /></ProtectedRoute>} />
             <Route path="/community" element={<ProtectedRoute><Community /></ProtectedRoute>} />
             <Route path="/calendar" element={<ProtectedRoute><Future /></ProtectedRoute>} />
+            <Route path="/leaderboard" element={<Leaderboard />} />
+
+            {/* Ticket Routes */}
+            <Route path="/tickets" element={<Tickets />} />
+            <Route path="/tickets/:id" element={<ProtectedRoute><TicketDetail /></ProtectedRoute>} />
+            <Route path="/admin/tickets" element={<ProtectedRoute><AdminTickets /></ProtectedRoute>} />
           </Routes>
         </main>
 

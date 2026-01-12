@@ -47,18 +47,21 @@ const Navbar: React.FC = () => {
     };
   }, []);
 
-  const navLinks = [
+  const publicLinks = [
     { name: 'Inicio', path: '/' },
     { name: 'Donaciones', path: '/donations' },
     { name: 'Eventos', path: '/events' },
-    { name: 'Calendario', path: '/calendar' },
     { name: 'Reglas', path: '/rules' },
+    { name: 'Ticket', path: '/tickets' },
     { name: 'Comunidad', path: '/community' },
+  ];
 
-    ...(isAdmin ? [
-      { name: 'Admin', path: '/admin' },
-      { name: 'KitDonato', path: '/kit-claims' }
-    ] : []),
+  const adminLinks = [
+    { name: 'Admin', path: '/admin' },
+    { name: 'Ticket', path: '/admin/tickets' },
+    { name: 'KitDonato', path: '/kit-claims' },
+    { name: 'Clasificación', path: '/leaderboard' },
+    { name: 'Calendario', path: '/calendar' },
   ];
 
   const isActive = (path: string) => location.pathname === path;
@@ -79,24 +82,46 @@ const Navbar: React.FC = () => {
           <div className="hidden xl:flex items-center flex-grow justify-end">
 
             {/* Links de navegación */}
+            {/* Links de navegación */}
             <div className="flex items-center space-x-6 mr-10">
-              {navLinks.map((link) => (
+              {publicLinks.map((link) => (
                 <Link
                   key={link.path}
                   to={link.path}
                   className={`text-[10px] font-black uppercase tracking-[0.2em] transition-all py-1 border-b-2 px-1 ${isActive(link.path)
-                    ? (link.name === 'Admin' ? 'text-red-500 border-red-500' :
-                      link.name === 'KitDonato' ? 'text-green-500 border-green-500' : 'text-primary border-primary')
-                    : (link.name === 'Admin'
-                      ? 'text-red-500/70 border-transparent hover:text-red-500 hover:border-red-500/20'
-                      : link.name === 'KitDonato'
-                        ? 'text-green-500/70 border-transparent hover:text-green-500 hover:border-green-500/20'
-                        : 'text-gray-500 border-transparent hover:text-white hover:border-white/20')
+                    ? 'text-primary border-primary'
+                    : 'text-gray-500 border-transparent hover:text-white hover:border-white/20'
                     }`}
                 >
                   {link.name}
                 </Link>
               ))}
+
+              {/* Admin Dropdown */}
+              {isAdmin && (
+                <div className="relative group">
+                  <button className="flex items-center gap-1 text-[10px] font-black uppercase tracking-[0.2em] py-1 text-red-500 border-b-2 border-transparent group-hover:border-red-500 transition-all cursor-pointer">
+                    ADMIN
+                    <span className="material-symbols-outlined text-[14px]">expand_more</span>
+                  </button>
+                  <div className="absolute top-full right-0 mt-0 pt-4 w-48 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform translate-y-2 group-hover:translate-y-0">
+                    <div className="bg-[#0a0a0a] border border-red-500/20 shadow-[0_10px_40px_rgba(0,0,0,0.8)] rounded-sm overflow-hidden flex flex-col">
+                      {adminLinks.map((link) => (
+                        <Link
+                          key={link.path}
+                          to={link.path}
+                          className={`px-4 py-3 text-[10px] font-black uppercase tracking-[0.2em] hover:bg-white/5 transition-colors border-l-2 ${isActive(link.path)
+                            ? 'text-white border-red-500 bg-red-500/10'
+                            : 'text-gray-400 border-transparent hover:text-red-400'
+                            }`}
+                        >
+                          {link.name}
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Separador visual sutil */}
@@ -173,7 +198,7 @@ const Navbar: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-1 gap-4">
-            {navLinks.map((link) => (
+            {publicLinks.map((link) => (
               <Link
                 key={link.path}
                 to={link.path}
@@ -184,6 +209,24 @@ const Navbar: React.FC = () => {
                 {link.name}
               </Link>
             ))}
+
+            {isAdmin && (
+              <>
+                <div className="mx-auto w-12 h-[1px] bg-red-500/30 my-2"></div>
+                <div className="text-red-500 text-xs font-black uppercase tracking-[0.3em] text-center mb-2">Administración</div>
+                {adminLinks.map((link) => (
+                  <Link
+                    key={link.path}
+                    to={link.path}
+                    onClick={() => setIsOpen(false)}
+                    className={`text-lg font-display font-black uppercase tracking-widest text-center py-1 ${isActive(link.path) ? 'text-red-500' : 'text-gray-500 hover:text-red-400'
+                      }`}
+                  >
+                    {link.name}
+                  </Link>
+                ))}
+              </>
+            )}
           </div>
 
           <div className="pt-6 border-t border-white/5">
