@@ -25,7 +25,5 @@ lerna-debug.log*
 *.sln
 *.sw?
 
-# Sensitive Scripts
-scripts/discord-bot.js
-scripts/sync-discord-kills.js
+
 *.bak.js
